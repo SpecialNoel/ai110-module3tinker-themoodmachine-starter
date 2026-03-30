@@ -25,15 +25,15 @@ This lab gives you hands on experience with how basic systems work, where they b
 2. Make sure your Python environment is active.
 3. Install dependencies:
 
-    ```bash
-    pip install -r requirements.txt
-    ```
+   ```bash
+   pip install -r requirements.txt
+   ```
 
 4. Run the rule-based starter:
 
-    ```bash
-    python main.py
-    ```
+   ```bash
+   python main.py
+   ```
 
 If pieces of the analyzer are not implemented yet, you will see helpful errors that guide you to the TODOs.
 
