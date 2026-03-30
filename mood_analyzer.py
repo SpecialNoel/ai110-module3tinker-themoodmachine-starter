@@ -9,6 +9,7 @@ This class starts with very simple logic:
   - Convert that score into a mood label
 """
 
+import re
 from typing import List, Dict, Tuple, Optional
 
 from dataset import POSITIVE_WORDS, NEGATIVE_WORDS
@@ -52,8 +53,12 @@ class MoodAnalyzer:
           - Handle simple emojis separately (":)", ":-(", "🥲", "😂")
           - Normalize repeated characters ("soooo" -> "soo")
         """
-        cleaned = text.strip().lower()
-        tokens = cleaned.split()
+          
+        text = text.strip().lower()
+        text = re.sub(r"[^\w\s:;()<>/@\-\u2600-\u27BF]", "", text)  # keep emoji+emoticon chars
+        text = re.sub(r"(.)\1{2,}", r"\1\1", text)  # repeat normalization
+        tokens = re.findall(r"\w+|[:;=8][\-]?[)D(Pdp]|🥲|😂|💀", text)
+        print(f"Preprocessing '{text}' -> {tokens}")
 
         return tokens
 
@@ -83,7 +88,34 @@ class MoodAnalyzer:
         #
         # Hint: if you implement negation, you may want to look at pairs of tokens,
         # like ("not", "happy") or ("never", "fun").
-        pass
+        
+        tokens = self.preprocess(text)
+        score = 0
+        negation_words = {"not", "never", "dont", "isnt", "wasnt", "arent"}
+        continue_next = False
+        
+        for i in range(0, len(tokens)):  
+          if continue_next: 
+            continue_next = False
+            continue
+          
+          token = tokens[i]
+          if i+1 < len(tokens):
+            if token in negation_words and tokens[i+1] in self.positive_words:
+              score -= 1
+              continue_next = True
+              continue
+            elif token in negation_words and tokens[i+1] in self.negative_words:
+              score += 1
+              continue_next = True
+              continue
+
+          if token in self.positive_words:
+              score += 1
+          elif token in self.negative_words:
+              score -= 1
+        
+        return score
 
     # ---------------------------------------------------------------------
     # Label prediction
@@ -110,7 +142,16 @@ class MoodAnalyzer:
         #   2. Return "positive" if the score is above 0.
         #   3. Return "negative" if the score is below 0.
         #   4. Return "neutral" otherwise.
-        pass
+        score = self.score_text(text)
+        print('Score for "{}" is {}'.format(text, score))
+        if score >= 1:
+            return "positive"
+        elif score <= -1:
+            return "negative"
+        elif score == 0:
+            return "neutral"
+        else:
+            return "mixed"
 
     # ---------------------------------------------------------------------
     # Explanations (optional but recommended)
