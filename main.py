@@ -27,10 +27,10 @@ def evaluate_rule_based(posts: List[str], labels: List[str]) -> float:
             correct += 1
 
         # If you implement explain(), you can uncomment these lines:
-        # reason = analyzer.explain(text)
-        # print(f'"{text}" -> predicted={predicted_label}, true={true_label} ({reason})')
+        reason = analyzer.explain(text)
+        print(f'"{text}" -> predicted={predicted_label}, true={true_label} ({reason})\n')
 
-        print(f'"{text}" -> predicted={predicted_label}, true={true_label}')
+        # print(f'"{text}" -> predicted={predicted_label}, true={true_label}')
 
     if total == 0:
         print("\nNo labeled examples to evaluate.")
@@ -53,9 +53,9 @@ def run_batch_demo() -> None:
     for text in SAMPLE_POSTS:
         label = analyzer.predict_label(text)
         # If explain() is implemented, show a short explanation.
-        # reason = analyzer.explain(text)
-        # print(f'"{text}" -> {label} ({reason})')
-        print(f'"{text}" -> {label}')
+        reason = analyzer.explain(text)
+        print(f'"{text}" -> {label} ({reason})\n')
+        # print(f'"{text}" -> {label}')
 
 
 def run_interactive_loop() -> None:
@@ -77,9 +77,9 @@ def run_interactive_loop() -> None:
 
         label = analyzer.predict_label(user_input)
         # If explain() is implemented, you can include an explanation:
-        # reason = analyzer.explain(user_input)
-        # print(f"Model: {label} ({reason})")
-        print(f"Model: {label}")
+        reason = analyzer.explain(user_input)
+        print(f"Model: {label} ({reason})\n")
+        # print(f"Model: {label}")
 
 
 if __name__ == "__main__":

@@ -65,6 +65,14 @@ class MoodAnalyzer:
     # ---------------------------------------------------------------------
     # Scoring logic
     # ---------------------------------------------------------------------
+    
+    def has_sarcasm(self, text: str) -> bool:
+      text_low = text.lower()
+      sarcasm_phrases = [
+        "i love getting", "yeah right", "as if", "sure", "totally",
+        "not like", "big fan", "can't wait"
+      ]
+      return any(p in text_low for p in sarcasm_phrases)
 
     def score_text(self, text: str) -> int:
         """
@@ -114,8 +122,8 @@ class MoodAnalyzer:
               score += 1
           elif token in self.negative_words:
               score -= 1
-        
-        return score
+              
+        return score if not self.has_sarcasm(text) else -score
 
     # ---------------------------------------------------------------------
     # Label prediction
@@ -192,3 +200,20 @@ class MoodAnalyzer:
             f"(positive: {positive_hits or '[]'}, "
             f"negative: {negative_hits or '[]'})"
         )
+
+
+'''
+Failure of score_text(): "I love getting stuck in traffic" (sarcasm)
+  - it should be valued to negative, but it got a positive score because of the word "love" alone.
+  
+  
+Failure on current scoring logic:
+  - "Feeling tired but kind of hopeful":
+    - Score is -1
+    - Tokens: ['feeling', 'tired', 'but', 'kind', 'of', 'hopeful']
+    - Positive words: []
+    - Negative words: ['tired']
+    - Predicted label: negative
+    - True label: mixed
+    - Fix: add the word "hopeful" to the POSITIVE_WORDS list in dataset.py
+'''
